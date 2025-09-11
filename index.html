@@ -94,11 +94,52 @@
 
       <!-- Embedded video -->
       <div class="mt-6">
-        <h3 class="text-sm text-slate-300 mb-2">Our Works</h3>
+        <h3 class="text-sm text-slate-300 mb-2">Our Video Work</h3>
         <div class="aspect-video rounded-xl overflow-hidden">
           <iframe src="ikshana video.mp4" title="Video placeholder" allowfullscreen class="w-full h-full"></iframe>
         </div>
       </div>
+
+      <!-- Image Gallery Section -->
+      <div class="mt-6">
+        <h3 class="text-sm text-slate-300 mb-4">Our Pictures Gallery</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Image 1 -->
+          <div class="w-full overflow-hidden rounded-xl">
+            <img src="pic1.jpg" alt="Work 1" 
+                class="w-full h-50 object-cover rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300"
+                onclick="openModal(this.src)">
+          </div>
+
+          <!-- Image 2 -->
+          <div class="w-full overflow-hidden rounded-xl">
+            <img src="pic2.jpg" alt="Work 2" 
+                class="w-full h-50 object-cover rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300"
+                onclick="openModal(this.src)">
+          </div>
+
+          <!-- Image 3 -->
+          <div class="w-full overflow-hidden rounded-xl">
+            <img src="pic3.jpg" alt="Work 3" 
+                class="w-full h-50 object-cover rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300"
+                onclick="openModal(this.src)">
+          </div>
+
+          <!-- Image 4 -->
+          <div class="w-full overflow-hidden rounded-xl">
+            <img src="pic4.jpg" alt="Work 4" 
+                class="w-full h-50 object-cover rounded-xl shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300"
+                onclick="openModal(this.src)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Fullscreen Modal -->
+      <div id="imageModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-50 p-4">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-white text-3xl font-bold">&times;</button>
+        <img id="modalImage" src="" class="max-h-[90vh] max-w-[90vw] rounded-xl shadow-2xl border-2 border-white">
+      </div>
+
 
       <!-- Instagram Posts Section -->
 <div class="mt-6">
@@ -246,39 +287,70 @@
     //   alert('Subscribed — stored locally. Integrate with your email provider to collect real leads.');
     // });
 
+    // Open modal with clicked image
+    function openModal(src) {
+      document.getElementById('imageModal').classList.remove('hidden');
+      document.getElementById('modalImage').src = src;
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('imageModal').classList.add('hidden');
+    }
+
+    // Close modal when clicking outside the image
+    document.getElementById('imageModal').addEventListener('click', function (e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+
     // ---------- vCard generation & save contact ----------
     document.addEventListener("DOMContentLoaded", () => {
-  function buildVCard() {
-    const lines = [];
-    lines.push('BEGIN:VCARD');
-    lines.push('VERSION:3.0');
-    lines.push(`FN:${CONFIG.businessName}`);
-    lines.push(`ORG:${CONFIG.businessName}`);
-    if(CONFIG.title) lines.push(`TITLE:${CONFIG.title}`);
-    lines.push(`TEL;TYPE=WORK,VOICE:${CONFIG.phone}`);
-    if(CONFIG.email) lines.push(`EMAIL;TYPE=INTERNET:${CONFIG.email}`);
-    if(CONFIG.website) lines.push(`URL:${CONFIG.website}`);
-    if(CONFIG.address) lines.push(`ADR;TYPE=WORK:;;${CONFIG.address};;;;`);
-    lines.push('END:VCARD');
-    return lines.join('\r\n');
-  }
+      // ** THE ERRONEOUS CODE HAS BEEN REMOVED FROM HERE **
 
-  document.getElementById('saveContactBtn').addEventListener('click', () => {
-    const vcardData = buildVCard();
-    console.log("Generated vCard:", vcardData); // Debugging
+      // Function to build the vCard text
+      function buildVCard() {
+        const lines = [];
+        lines.push('BEGIN:VCARD');
+        lines.push('VERSION:3.0');
+        lines.push(`FN:${CONFIG.businessName}`);
+        lines.push(`ORG:${CONFIG.businessName}`);
+        if (CONFIG.title) lines.push(`TITLE:${CONFIG.title}`);
+        lines.push(`TEL;TYPE=WORK,VOICE:${CONFIG.phone}`);
+        if (CONFIG.email) lines.push(`EMAIL;TYPE=INTERNET:${CONFIG.email}`);
+        if (CONFIG.website) lines.push(`URL:${CONFIG.website}`);
+        if (CONFIG.address) lines.push(`ADR;TYPE=WORK:;;${CONFIG.address};;;;`);
+        lines.push('END:VCARD');
+        return lines.join('\r\n');
+      }
 
-    const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+      // Click event for Save Contact button
+      const saveBtn = document.getElementById('saveContactBtn');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+          const vcardData = buildVCard();
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${CONFIG.businessName.replace(/\s+/g, '_')}.vcf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  });
-});
+          // Create a downloadable .vcf file
+          const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${CONFIG.businessName.replace(/\s+/g, '_')}.vcf`;
+          document.body.appendChild(a);
+          a.click(); // Triggers the download
+          a.remove();
+
+          // Release the object URL to free memory
+          URL.revokeObjectURL(url);
+        });
+      } else {
+        console.error("Save Contact button not found!");
+      }
+    });
+
 
     // ---------- Optionally auto-trigger download for better UX on some devices ----------
     // Note: browsers may block auto-downloads; keep user-initiated clicks as above.
